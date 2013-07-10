@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{{ siteName }}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/css/bootstrap.css" />
+<link rel="stylesheet" href="/css/bootstrap.flat.css" />
+<link rel="stylesheet" href="/css/1140.css" />
+<link rel="stylesheet" href="/css/sex.css" />
+<script src="/js/jquery-2.0.3.min.js"></script>
+<script src="https://api.trello.com/1/client.js?key={{ apiKey }}"></script>
+</head>
+<body>
+{% include 'nav.html' %}
+<div class="container16">
+  {% block content %}{% endblock %}
+</div>
+
+<script>
+
+var ORG_NAME = 'richmondday';
+$(function() {
+
+  Trello.authorize({
+    interactive:false,
+    success: AuthComplete,
+  });
+
+  $('#loginlink').click(function() {
+    Trello.authorize({
+      type:"popup",
+      scope: { read: true, write:true, account:true },
+      success: AuthComplete
+    });
+  });
+
+  $('#logout').click(function() {
+    Trello.deauthorize();
+    updateLoggedIn();
+  });
+});
+
+var AuthComplete = function() {
+  updateLoggedIn();
+
+    Trello.organizations.get(ORG_NAME, function(org) {
+      console.log(org);
+
+    });
+
+  Trello.members.get('me', function(member) {
+    console.log(member);
+    $('#member_info').html('Logged in as '  + member.fullName);
+  });
+
+  var $boards = $('<div>')
+        .text('Loading boards...')
+        .appendTo('#boards');
+  // show boards
+  Trello.get('organizations/'+ ORG_NAME + '/boards', function(boards) {
+    $boards.empty();
+    $.each(boards, function(idx, board) {
+      console.log(board);
+      if(!board.closed) {
+        var entry = $("<a>")
+            .attr({ href: board.url, target:"trello", id:idx})
+            .addClass('entry')
+            .text(board.name)
+            .appendTo('#boards');
+      }
+    });
+  });
+};
+
+var updateLoggedIn = function() {
+  var isLoggedIn = Trello.authorized();
+  $("#loggedout").toggle(!isLoggedIn);
+  $("#loggedin").toggle(isLoggedIn);
+  $("#loggedin-header").toggle(isLoggedIn);
+};
+</script>
+</body>
+</html>
