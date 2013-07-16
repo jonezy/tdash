@@ -38,35 +38,39 @@ $(function() {
     Trello.deauthorize();
     updateLoggedIn();
   });
+
+  updateLoggedIn();
 });
 
 var AuthComplete = function() {
   updateLoggedIn();
+  $('#boards').empty();
 
-    Trello.organizations.get(ORG_NAME, function(org) {
-      console.log(org);
-
-    });
+  Trello.organizations.get(ORG_NAME, function(org) {
+    console.log(org);
+  });
 
   Trello.members.get('me', function(member) {
-    console.log(member);
     $('#member_info').html('Logged in as '  + member.fullName);
   });
 
-  var $boards = $('<div>')
-        .text('Loading boards...')
-        .appendTo('#boards');
+  var $boards = $('#boards')
+        .text('Loading boards...');
+
   // show boards
   Trello.get('organizations/'+ ORG_NAME + '/boards', function(boards) {
     $boards.empty();
     $.each(boards, function(idx, board) {
-      console.log(board);
       if(!board.closed) {
+        var item = $("<div>")
+            .addClass('column3');
+
         var entry = $("<a>")
             .attr({ href: board.url, target:"trello", id:idx})
-            .addClass('entry')
             .text(board.name)
-            .appendTo('#boards');
+            .appendTo(item);
+
+        item.appendTo('#boards');
       }
     });
   });

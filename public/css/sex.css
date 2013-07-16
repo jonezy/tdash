@@ -1,5 +1,16 @@
 #loggedin-header {color:#777;padding-top:10px;}
 .entry {
-  display: block;
-  padding:2px;
 }
+
+#boards > div {
+  margin-bottom:10px;
+  height:122.5px;
+
+  background:#eee;
+  border: solid 1px #aaa;
+
+  vertical-align:middle;
+  text-align:center;
+}
+
+.navbar .nav > li > a { padding-top:0;}
